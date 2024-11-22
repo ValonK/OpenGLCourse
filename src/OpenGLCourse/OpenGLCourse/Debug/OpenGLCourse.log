@@ -1,2 +1,2 @@
 ﻿  OpenGLCourse.cpp
-LINK : fatal error LNK1104: cannot open file 'glfw3.lib'
+  OpenGLCourse.vcxproj -> C:\Development\OpenGLCourse\src\OpenGLCourse\Debug\OpenGLCourse.exe
