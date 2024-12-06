@@ -1,15 +1,21 @@
 #include <stdio.h>
 #include <iostream>
+#include <stdlib.h>
 #include <string.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-const GLint WIDTH = 1920, HEIGHT = 1080;
+using namespace std;
+
+const GLint WIDTH = 1290, HEIGHT = 720;
 
 // Vertex Array Object, Vertex Buffer Object ID's
-GLuint VAO, VBO, shader;
+GLuint VAO, VBO, shader, uniformXMove;
 
-using namespace std;
+bool direction = true;
+float triOffset = 0.f;
+float maxOffset = 0.7f;
+float triIncrement = 0.0005f;
 
 // Vertex Shader
 static const char* vertexShader = R"(
@@ -17,9 +23,11 @@ static const char* vertexShader = R"(
 
 layout(location = 0) in vec3 pos;
 
+uniform float xMove; 
+
 void main()
 {
-    gl_Position = vec4(0.4 * pos.x, 0.4 * pos.y, pos.z, 1.0);
+    gl_Position = vec4(0.4 * pos.x + xMove, 0.4 * pos.y, pos.z, 1.0);
 }
 )";
 
@@ -95,6 +103,8 @@ void CompileShaders()
         printf("Error validating program: '%s'\n", eLog);
         return;
     }
+
+    uniformXMove = glGetUniformLocation(shader, "xMove");
 }
 
 void CreateTriangle()
@@ -178,11 +188,26 @@ int main()
         // Get + Handle user input events
         glfwPollEvents();
 
+        if (direction) 
+        {
+            triOffset += triIncrement;
+        }
+        else 
+        {
+            triOffset -= triIncrement;
+        }
+
+        if (abs(triOffset) >= maxOffset) 
+        {
+            direction = !direction;
+        }
+
         // Clear window
         glClearColor(0.f, 0.f, 0.f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(shader);
+        glUniform1f(uniformXMove, triOffset);
 
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
