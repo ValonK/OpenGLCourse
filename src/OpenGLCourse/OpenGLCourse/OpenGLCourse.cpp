@@ -38,11 +38,14 @@ static const char* vertexShader = R"(
 
 layout(location = 0) in vec3 pos;
 
+out vec4 vColor;
+
 uniform mat4 model; 
 
 void main()
 {
     gl_Position = model * vec4(pos, 1.0);
+    vColor = vec4(clamp(pos, 0.0f, 1.0f), 1.0f);
 }
 )";
 
@@ -50,11 +53,12 @@ void main()
 static const char* fragmentShader = R"(
 #version 330
 
+in vec4 vColor;
 out vec4 colour;
 
 void main()
 {
-    colour = vec4(1.0, 0.0, 0.0, 1.0);
+    colour = vColor;
 }
 )";
 
@@ -244,9 +248,9 @@ int main()
         glUseProgram(shader);
 
         glm::mat4 model(1.0f);
-        model = glm::translate(model, glm::vec3(triOffset, 0.f, 0.f));
-        model = glm::rotate(model, curAngle * toRadians, glm::vec3(0.f, 0.f, 1.f));
-        model = glm::scale(model, glm::vec3(curSize, curSize, 1.f));
+        //model = glm::translate(model, glm::vec3(triOffset, 0.f, 0.f));
+        //model = glm::rotate(model, curAngle * toRadians, glm::vec3(0.f, 0.f, 1.f));
+        model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.f));
 
         glUniformMatrix4fv(uniformModel, 1.f, GL_FALSE, glm::value_ptr(model));
 
