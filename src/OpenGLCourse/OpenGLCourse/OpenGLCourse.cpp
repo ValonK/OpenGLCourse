@@ -24,18 +24,6 @@ std::vector<Shader> shaderList;
 
 Window mainWindow;
 
-bool direction = true;
-float triOffset = 0.f;
-float maxOffset = 0.7f;
-float triIncrement = 0.0005f;
-
-float curAngle = 0.f;
-
-bool sizeDirection = true;
-float curSize = 0.4f;
-float maxSize = 0.8f;
-float minSize = 0.1f;
-
 static const char* vertexShader = "Shaders/shader.vert";
 static const char* fragmentShader = "Shaders/shader.frag";
 
@@ -60,12 +48,7 @@ void CreateObject()
 	Mesh* obj1 = new Mesh();
 	obj1->Create(vertices, indices, 12, 12);
 	meshList.push_back(obj1);
-
-	Mesh* obj2 = new Mesh();
-	obj2->Create(vertices, indices, 12, 12);
-	meshList.push_back(obj2);
 }
-
 
 void CreateShaders()
 {
@@ -73,7 +56,6 @@ void CreateShaders()
 	shader1->CreateFromFile(vertexShader, fragmentShader);
 	shaderList.push_back(*shader1);
 }
-
 
 int main()
 {
@@ -92,40 +74,6 @@ int main()
 		// Get + Handle user input events
 		glfwPollEvents();
 
-		if (direction)
-		{
-			triOffset += triIncrement;
-		}
-		else
-		{
-			triOffset -= triIncrement;
-		}
-
-		if (abs(triOffset) >= maxOffset)
-		{
-			direction = !direction;
-		}
-
-		curAngle += 0.01f;
-		if (curAngle >= 360)
-		{
-			curAngle -= 360;
-		}
-
-		if (sizeDirection)
-		{
-			curSize += 0.0001f;
-		}
-		else
-		{
-			curSize -= 0.0001f;
-		}
-
-		if (curSize >= maxSize || curSize <= minSize)
-		{
-			sizeDirection = !sizeDirection;
-		}
-
 		// Clear window
 		glClearColor(0.f, 0.f, 0.f, 1.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -135,19 +83,12 @@ int main()
 		uniformModel = shaderList[0].GetModelLocation();
 
 		glm::mat4 model(1.0f);
-		model = glm::translate(model, glm::vec3(triOffset, 0.f, -2.5f));
+		model = glm::translate(model, glm::vec3(0, 0.f, -2.5f));
 		model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.f));
 		glUniformMatrix4fv(uniformModel, 1.f, GL_FALSE, glm::value_ptr(model));
 		glUniformMatrix4fv(uniformProjection, 1.f, GL_FALSE, glm::value_ptr(projection));
 
 		meshList[0]->Render();
-
-		model = glm::mat4();
-		model = glm::translate(model, glm::vec3(-triOffset, 1.f, -2.5f));
-		model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.f));
-		glUniformMatrix4fv(uniformModel, 1.f, GL_FALSE, glm::value_ptr(model));
-
-		meshList[1]->Render();
 
 		glUseProgram(0);
 
