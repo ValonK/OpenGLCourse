@@ -1,3 +1,5 @@
+#define STB_IMAGE_IMPLEMENTATION
+
 #include <stdio.h>
 #include <iostream>
 #include <stdlib.h>
@@ -15,6 +17,8 @@
 #include "Shader.h"
 #include "Window.h"
 #include "Camera.h"
+#include "Texture.h"
+
 
 using namespace std;
 
@@ -25,6 +29,9 @@ std::vector<Shader> shaderList;
 
 Window mainWindow;
 Camera camera;
+
+Texture brickTexture;
+Texture dirtTexture;
 
 GLfloat deltaTime = 0.0f;
 GLfloat lastTime = 0.0f;
@@ -44,15 +51,20 @@ void CreateObject()
 
 	GLfloat vertices[] =
 	{
-		-1.f, -1.f, 0.f,
-		0.0f, -1.f, 1.f,
-		1.0f, -1.f, 0.f,
-		0.f, 1.f, 0.f
+	//  x     y     z    u,    v
+		-1.f, -1.f, 0.f, 0.0f, 0.0f,
+		0.0f, -1.f, 1.f, 0.5f, 0.0f,
+		1.0f, -1.f, 0.f, 1.0f, 0.0f,
+		0.f,   1.f, 0.f, 0.5f, 1.0f, 
 	};
 
 	Mesh* obj1 = new Mesh();
-	obj1->Create(vertices, indices, 12, 12);
+	obj1->Create(vertices, indices, 20, 12);
 	meshList.push_back(obj1);
+
+	Mesh* obj2 = new Mesh();
+	obj2->Create(vertices, indices, 20, 12);
+	meshList.push_back(obj2);
 }
 
 void CreateShaders()
@@ -60,6 +72,10 @@ void CreateShaders()
 	Shader* shader1 = new Shader();
 	shader1->CreateFromFile(vertexShader, fragmentShader);
 	shaderList.push_back(*shader1);
+
+	Shader* shader2 = new Shader();
+	shader2->CreateFromFile(vertexShader, fragmentShader);
+	shaderList.push_back(*shader2);
 }
 
 int main()
@@ -71,6 +87,12 @@ int main()
 	CreateShaders();
 
 	camera = Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.f, 0.f, 5.0f, 1.0f);
+
+	brickTexture = Texture("Textures/brick.png");
+	brickTexture.Load();
+
+	dirtTexture = Texture("Textures/dirt.png");
+	dirtTexture.Load();
 
 	GLuint uniformProjection = 0, uniformModel = 0, uniformView = 0;
 
@@ -104,7 +126,20 @@ int main()
 		glUniformMatrix4fv(uniformProjection, 1.f, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(uniformView, 1.f, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
 
+		brickTexture.Use();
 		meshList[0]->Render();
+
+		model = glm::mat4();
+		model = glm::translate(model, glm::vec3(0.0f, 1.0f, -2.5f));
+		model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.0f));
+		glUniformMatrix4fv(uniformModel, 1.f, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(uniformProjection, 1.f, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(uniformView, 1.f, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
+
+
+		dirtTexture.Use();
+		meshList[1]->Render();
+		shaderList[1].Use();
 
 		glUseProgram(0);
 
