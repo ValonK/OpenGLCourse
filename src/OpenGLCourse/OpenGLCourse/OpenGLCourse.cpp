@@ -102,6 +102,18 @@ void CreateObject()
          0.f,  1.f,  0.0f,  0.5f, 1.0f,   0.f,  0.f,  0.f,
     };
 
+    unsigned int floorIndices[] = {
+       0, 2, 1,
+       1, 2, 3,
+    };
+
+    GLfloat floorVertices[] = {
+        -10.f, 0.f, -10.f,  0.f, 0.f,  0.f, -1.f, 0.f,
+        10.f, 0.f, -10.f,   10.f, 0.0f, 0.f, -1.f, 0.f,
+        -10.f, 0.f, 10.f,   0.0f, 10.f, 0.0f, -1.f, 0.f,
+        10.f, 0.0f, 10.0f,  10.f, 10.f, 0.0, -1.f, 0.0f,
+    };
+
     CalcAverageNormals(indices, 12, vertices, 32, 8, 5);
 
     Mesh* obj1 = new Mesh();
@@ -111,6 +123,10 @@ void CreateObject()
     Mesh* obj2 = new Mesh();
     obj2->Create(vertices, indices, 32, 12);
     meshList.push_back(obj2);
+
+    Mesh* obj3 = new Mesh();
+    obj3->Create(floorVertices, floorIndices, 32, 6);
+    meshList.push_back(obj3);
 }
 
 void CreateShaders()
@@ -151,9 +167,18 @@ int main()
                                 0.0f, 0.0f, -1.0f);
 
     unsigned int pointLightCount = 0;
-    pointLights[0] = PointLight(0.f, 1.f, 0.f, 0.1f, 1.f, 
-                                -4.f, 2.f, 0.f,
-                                0.3f, 0.1f, 0.1f);
+    pointLights[0] = PointLight(
+        0.0f, 0.0f, 1.f,
+        0.0f, 1.0f,
+        4.0f, 0.0f, 0.0f,
+        0.3f, 0.2f, 0.1f);
+    pointLightCount++;
+
+    pointLights[1] = PointLight(
+        0.0f, 1.0f, 0.f,
+        0.1f, 1.0f,
+        -4.0f, 2.0f, 0.0f,
+        0.3f, 0.1f, 0.1f);
     pointLightCount++;
 
     // Projection
@@ -225,6 +250,16 @@ int main()
         dirtTexture.Use();
         dullMaterial.Use(uniformSpecularIntensity, uniformShininess);
         meshList[1]->Render();
+
+
+        // Render Third Mesh 
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.f, -3.f, -2.5f));
+        glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+
+        dirtTexture.Use();
+        dullMaterial.Use(uniformSpecularIntensity, uniformShininess);
+        meshList[2]->Render();
 
         // Done with this shader
         glUseProgram(0);

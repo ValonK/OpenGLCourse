@@ -37,7 +37,7 @@ struct Material
 
 uniform int pointLightCount;
 uniform DirectionalLight directionalLight;
-uniform PointLight pointLight[MAX_POINT_LIGHTS];
+uniform PointLight pointLights[MAX_POINT_LIGHTS];
 
 uniform sampler2D theTexture;
 uniform Material material;
@@ -78,15 +78,15 @@ vec4 CalcPointLight()
     vec4 totalColour = vec4(0,0,0,0);
     for(int i = 0; i < pointLightCount; i++)
     {
-        vec3 direction = pointLight[i].position - FragPos;
+        vec3 direction = pointLights[i].position - FragPos;
 
         float distance = length(direction);
         direction = normalize(direction);
 
-        vec4 colour = CalcLightByDirection(pointLight[i].base, direction);
-        float attenuation = pointLight[i].exponent * distance * distance +
-                            pointLight[i].linear * distance +
-                            pointLight[i].constant;
+        vec4 colour = CalcLightByDirection(pointLights[i].base, direction);
+        float attenuation = pointLights[i].exponent * distance * distance +
+                            pointLights[i].linear * distance +
+                            pointLights[i].constant;
         
         totalColour += (colour / attenuation);
     }
