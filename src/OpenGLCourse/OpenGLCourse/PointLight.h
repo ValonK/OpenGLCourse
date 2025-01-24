@@ -20,17 +20,17 @@ public:
 
 
 	void Use(
-		GLfloat ambientIntesityLocation,
-		GLfloat ambientColourLocation,
-		GLfloat diffuseIntensityLocation,
-		GLfloat positionLocation,
-		GLfloat constantLocation, 
-		GLfloat linearLocation,
-		GLfloat exponentLocation);
+		GLuint ambientIntesityLocation,
+		GLuint ambientColourLocation,
+		GLuint diffuseIntensityLocation,
+		GLuint positionLocation,
+		GLuint constantLocation,
+		GLuint linearLocation,
+		GLuint exponentLocation);
 
 	~PointLight();
 
-private:
+protected:
 	glm::vec3 position;
 	GLfloat constant, linear, exponent;
 

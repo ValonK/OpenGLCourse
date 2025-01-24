@@ -10,7 +10,8 @@ public:
 	Texture();
 	Texture(const char* fileLoc);
 
-	void Load();
+	bool Load();
+	bool LoadA();
 	void Use();
 	void Clear();
 
